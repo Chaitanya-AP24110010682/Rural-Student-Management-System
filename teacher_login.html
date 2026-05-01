@@ -1,0 +1,19 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<div class="card" style="max-width: 500px; margin: 0 auto;">
+    <div class="card-header">Teacher Login</div>
+    <form method="POST" action="{{ url_for('login_teacher') }}">
+        <div class="form-group">
+            <label for="email">Email Address</label>
+            <input type="email" id="email" name="email" class="form-control" required>
+        </div>
+        <div class="form-group">
+            <label for="password">Password</label>
+            <input type="password" id="password" name="password" class="form-control" required>
+        </div>
+        <button type="submit" class="btn btn-primary">Login</button>
+    </form>
+    <p style="margin-top: 1rem; text-align: center;">Don't have an account? <a href="{{ url_for('register_teacher') }}">Register here</a></p>
+</div>
+{% endblock %}

@@ -1,0 +1,44 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Rural Student Management</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+</head>
+<body>
+    <div class="container">
+        <nav>
+            <a href="{{ url_for('index') }}"><h1>EduConnect</h1></a>
+            <div class="nav-links">
+                {% if session.role %}
+                    <span>Welcome, {{ session.name }}</span>
+                    {% if session.role == 'teacher' %}
+                        <a href="{{ url_for('teacher_dashboard') }}">Dashboard</a>
+                    {% else %}
+                        <a href="{{ url_for('student_dashboard') }}">Dashboard</a>
+                    {% endif %}
+                    <a href="{{ url_for('logout') }}" class="btn btn-secondary" style="padding: 0.5rem 1rem;">Logout</a>
+                {% else %}
+                    <a href="{{ url_for('login_student') }}">Student Portal</a>
+                    <a href="{{ url_for('login_teacher') }}">Teacher Portal</a>
+                {% endif %}
+            </div>
+        </nav>
+
+        <main>
+            <div class="flash-messages">
+                {% with messages = get_flashed_messages(with_categories=true) %}
+                    {% if messages %}
+                        {% for category, message in messages %}
+                            <div class="flash {{ category }}">{{ message }}</div>
+                        {% endfor %}
+                    {% endif %}
+                {% endwith %}
+            </div>
+
+            {% block content %}{% endblock %}
+        </main>
+    </div>
+</body>
+</html>

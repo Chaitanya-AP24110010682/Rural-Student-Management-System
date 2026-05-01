@@ -1,0 +1,145 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<div class="grid-2">
+    <!-- Left Column: Attendance and Homework -->
+    <div>
+        <div class="card">
+            <div class="card-header">My Attendance</div>
+            {% if attendance %}
+            <table>
+                <thead>
+                    <tr>
+                        <th>Date</th>
+                        <th>Status</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for att in attendance %}
+                    <tr>
+                        <td>{{ att.date }}</td>
+                        <td>
+                            <span style="color: {% if att.status == 'Present' %}var(--success-color){% else %}var(--error-color){% endif %}; font-weight: 600;">
+                                {{ att.status }}
+                            </span>
+                        </td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+            {% else %}
+            <p>No attendance records found.</p>
+            {% endif %}
+        </div>
+
+        <div class="card">
+            <div class="card-header">Upload Homework</div>
+            <form method="POST" action="{{ url_for('upload_homework') }}" enctype="multipart/form-data">
+                <div class="form-group">
+                    <label for="subject">Subject / Assignment Name</label>
+                    <input type="text" id="subject" name="subject" class="form-control" required>
+                </div>
+                <div class="form-group">
+                    <label for="file">Homework File</label>
+                    <input type="file" id="file" name="file" class="form-control" required>
+                </div>
+                <button type="submit" class="btn btn-primary" style="background: linear-gradient(135deg, var(--secondary-color), #F472B6);">Submit Homework</button>
+            </form>
+
+            <h4 style="margin-top: 2rem; margin-bottom: 1rem;">My Submissions & Grades</h4>
+            {% if homeworks %}
+            <table>
+                <thead>
+                    <tr>
+                        <th>Subject</th>
+                        <th>File</th>
+                        <th>Grade</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for hw in homeworks %}
+                    <tr>
+                        <td>{{ hw.subject }}</td>
+                        <td><a href="{{ url_for('download_homework', filename=hw.filename) }}">Download</a></td>
+                        <td>
+                            {% if hw.grade %}
+                                <span style="font-weight: bold; color: var(--success-color);">{{ hw.grade }}</span>
+                            {% else %}
+                                <span style="color: #6B7280; font-style: italic;">Not graded yet</span>
+                            {% endif %}
+                        </td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+            {% else %}
+            <p>No homework submitted yet.</p>
+            {% endif %}
+        </div>
+    </div>
+
+    <!-- Right Column: Materials and Messages -->
+    <div>
+        <div class="card">
+            <div class="card-header">Notice Board</div>
+            {% if notices %}
+                {% for notice in notices|reverse %}
+                <div style="background-color: var(--bg-color); padding: 1rem; border-radius: 8px; margin-bottom: 1rem; border-left: 4px solid var(--primary-color);">
+                    <p style="font-size: 0.875rem; color: #6B7280; margin-bottom: 0.25rem;">{{ notice.timestamp }}</p>
+                    <p style="margin: 0.5rem 0;"><strong>{{ notice.title }}</strong></p>
+                    <p style="margin: 0;">{{ notice.content }}</p>
+                </div>
+                {% endfor %}
+            {% else %}
+            <p>No notices posted by your teacher yet.</p>
+            {% endif %}
+        </div>
+
+        <div class="card">
+            <div class="card-header">Study Materials</div>
+            {% if materials %}
+            <ul>
+                {% for mat in materials %}
+                <li style="margin-bottom: 0.5rem; padding: 0.5rem; background: var(--bg-color); border-radius: 4px;">
+                    <strong>{{ mat.subject }}</strong> <br>
+                    <a href="{{ url_for('download_material', filename=mat.filename) }}" style="color: var(--primary-color);">Download: {{ mat.filename }}</a>
+                    <br><span style="font-size: 0.75rem; color: #6B7280;">Uploaded: {{ mat.upload_date }}</span>
+                </li>
+                {% endfor %}
+            </ul>
+            {% else %}
+            <p>No study materials uploaded by your teacher yet.</p>
+            {% endif %}
+        </div>
+
+        <div class="card">
+            <div class="card-header">Contact Teacher</div>
+            <form method="POST" action="{{ url_for('send_message') }}">
+                <div class="form-group">
+                    <label for="message">Message</label>
+                    <textarea id="message" name="message" class="form-control" rows="3" required></textarea>
+                </div>
+                <button type="submit" class="btn btn-secondary">Send Message</button>
+            </form>
+
+            <h4 style="margin-top: 2rem; margin-bottom: 1rem;">Message History</h4>
+            {% if messages %}
+                {% for msg in messages %}
+                <div style="background-color: var(--bg-color); padding: 1rem; border-radius: 8px; margin-bottom: 1rem;">
+                    <p style="font-size: 0.875rem; color: #6B7280;">{{ msg.timestamp }}</p>
+                    <p style="margin: 0.5rem 0;"><strong>You:</strong> {{ msg.message }}</p>
+                    
+                    {% if msg.reply %}
+                    <div style="background-color: #E0E7FF; padding: 0.5rem; border-radius: 4px; margin-top: 0.5rem; font-size: 0.875rem;">
+                        <strong>Teacher:</strong> {{ msg.reply }}
+                    </div>
+                    {% endif %}
+                </div>
+                {% endfor %}
+            {% else %}
+            <p>No messages sent yet.</p>
+            {% endif %}
+        </div>
+    </div>
+</div>
+{% endblock %}
